@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { TODO_FIELDS } from './TodoFields';
 
+import styles from './Todo.module.css'; 
+
 const Todo = () => {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState("");
@@ -11,10 +13,8 @@ const Todo = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-
         if (newTask.trim() === "") return;
-
-        setTasks(prevTasks => [...prevTasks, newTask]);
+        setTasks(prevTasks => [...prevTasks, { text: newTask, completed: false }]);        
         setNewTask("");
     }
 
@@ -22,25 +22,46 @@ const Todo = () => {
         setTasks(prevTasks => prevTasks.filter((_, index) => index !== indexToDelete));
     };
 
+    const handleToggleTask = (indexToToggle) => {
+        setTasks(prevTasks => 
+            prevTasks.map((task, index) => {
+                if (index === indexToToggle) {
+                    return { ...task, completed: !task.completed };
+                }
+                return task;
+            })
+        );
+    };
+
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <ul>
-                    {tasks.map((t, index) => 
-                        <li key={index}>
-                            {t}
-                            <span 
-                                onClick={() => handleDelete(index)}
-                                title="Supprimer"
-                            >
-                                🗑️
-                            </span>
-                        </li>)}
-                </ul>
+        <div className={styles.container}>
+            <ul className={styles.list}>
+                {tasks.map((task, index) => (
+                    <li key={index} className={styles.item}>
+                        <span 
+                            onClick={() => handleToggleTask(index)}
+                            className={`${styles.taskText} ${task.completed ? styles.completed : ''}`}
+                        >
+                            {task.text}
+                        </span>
+                        
+                        <span 
+                            onClick={() => handleDelete(index)}
+                            className={styles.deleteBtn}
+                            title="Supprimer"
+                        >
+                            🗑️
+                        </span>
+                    </li>
+                ))}
+            </ul>
+
+            <form onSubmit={handleSubmit} className={styles.formGroup}>
                 {TODO_FIELDS.map((fields, index) => (
-                    <div key={index}>
-                        <label htmlFor={fields.id}>{fields.label} : </label>
+                    // Note: React.Fragment (<>) est utile ici si vous aviez plusieurs éléments
+                    <div key={index}> 
                         <input
+                            className={styles.input}
                             type={fields.type}
                             id={fields.id}
                             name={fields.name}
@@ -50,9 +71,9 @@ const Todo = () => {
                         />
                     </div>
                 ))}
-                <button>Valider</button>
+                <button type="submit" className={styles.button}>Valider</button>
             </form>
-        </>
+        </div>
     )
 }
 
