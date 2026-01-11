@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TODO_FIELDS } from './TodoFields';
 
 import styles from './Todo.module.css'; 
 
 const Todo = () => {
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState(() => {
+        const savedTasks = localStorage.getItem('mes-taches-react');
+        return savedTasks ? JSON.parse(savedTasks) : [];
+    });
     const [newTask, setNewTask] = useState("");
+
+    useEffect(() => {
+        localStorage.setItem('mes-taches-react', JSON.stringify(tasks));
+    }, [tasks]);
 
     const handleChange = (event) => {
         setNewTask(event.target.value);
