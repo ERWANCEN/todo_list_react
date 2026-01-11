@@ -18,11 +18,24 @@ const Todo = () => {
         setNewTask("");
     }
 
+    const handleDelete = (indexToDelete) => {
+        setTasks(prevTasks => prevTasks.filter((_, index) => index !== indexToDelete));
+    };
+
     return (
         <>
             <form onSubmit={handleSubmit}>
                 <ul>
-                    {tasks.map((t, index) => <li key={index}>{t}</li>)}
+                    {tasks.map((t, index) => 
+                        <li key={index}>
+                            {t}
+                            <span 
+                                onClick={() => handleDelete(index)}
+                                title="Supprimer"
+                            >
+                                🗑️
+                            </span>
+                        </li>)}
                 </ul>
                 {TODO_FIELDS.map((fields, index) => (
                     <div key={index}>
